@@ -652,7 +652,7 @@ async def _make_anthropic_call(
         content.insert(0, page_img_content)
 
     response = await ANTHROPIC_CLIENT.messages.create(
-        model="claude-3-5-sonnet-20241022",
+        model="claude-sonnet-5-5",
         max_tokens=8192,
         messages=[
             {
