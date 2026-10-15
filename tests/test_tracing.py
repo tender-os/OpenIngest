@@ -10,10 +10,9 @@ from langfuse.openai import AsyncOpenAI
 
 from tensorlake_docai.providers.tracing import (
     IMAGE_PLACEHOLDER,
-    end_parse,
-    start_parse,
     strip_inline_images,
     traced_call,
+    traced_parse,
     unsigned_url,
 )
 
@@ -80,16 +79,13 @@ def test_traced_openai_call_sends_no_langfuse_fields_to_openai():
                 name="page_classification",
             )
 
-    start_parse(
+    with traced_parse(
         parse_id="fc-1",
         stage="post_ocr",
         labels={"organization_id": "org_1"},
         file_url="https://x/y.pdf?sig=1",
-    )
-    try:
+    ):
         response = asyncio.run(call())
-    finally:
-        end_parse()
 
     assert response.choices[0].message.content == "ok"
     assert sorted(sent) == ["messages", "model"]

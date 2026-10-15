@@ -47,12 +47,13 @@ def unsigned_url(url: Optional[str]) -> str:
     return urlsplit(url)._replace(query="", fragment="").geturl()
 
 
-def start_parse(
+@contextmanager
+def traced_parse(
     *, parse_id: str, stage: str, labels: Optional[dict] = None, file_url: Optional[str] = None
-) -> None:
+) -> Iterator[None]:
+    """Attribute every traced call inside to one parse stage, then flush."""
     langfuse_client()
     labels = labels or {}
-    _current_parse.clear()
     _current_parse.update(
         parse_id=parse_id,
         stage=stage,
@@ -60,11 +61,11 @@ def start_parse(
         organization_id=str(labels.get("organization_id", "")),
         tender_id=str(labels.get("tender_id", "")),
     )
-
-
-def end_parse() -> None:
-    langfuse_client().flush()
-    _current_parse.clear()
+    try:
+        yield
+    finally:
+        langfuse_client().flush()
+        _current_parse.clear()
 
 
 @contextmanager
