@@ -77,6 +77,6 @@ def traced_call(job_type: str) -> Iterator[None]:
         session_id=_current_parse.get("parse_id"),
         tags=["document-parsing", job_type, _current_parse.get("stage", "local")],
         metadata=metadata,
-        trace_name=job_type,
+        trace_name=f"ingestion.{job_type}",
     ):
         yield
