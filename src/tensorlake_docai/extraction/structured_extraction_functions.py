@@ -419,7 +419,7 @@ class StructuredExtraction:
 
             # Create streaming request with Pydantic model (context manager, not awaitable)
             async with self._anthropic.beta.messages.stream(
-                model="claude-sonnet-4-5",
+                model="claude-sonnet-5-5",
                 system=system_prompt,
                 max_tokens=16000,
                 messages=[
