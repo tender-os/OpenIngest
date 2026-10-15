@@ -362,6 +362,12 @@ class ParseRequest(BaseModel):
     # Used by the GPU/CPU split so the GPU stage only ever runs OCR; the post-OCR
     # stage resumes via ``resume_post_ocr_app``. Default False = unchanged behaviour.
     ocr_only: bool = False
+    # When True (used with ocr_only), DotsOCRTask stops BEFORE routing figure-bearing
+    # docs to Ovis, so the dots-ocr GPU stage never co-loads Ovis. The OvisFigureOCRTask
+    # is then run in its OWN GPU container via ``run_ovis_app``. This mirrors upstream's
+    # two-GPU split (dots and Ovis as separate @function tasks) for our single-process
+    # wrapper. Default False = Ovis runs in-process right after dots (unchanged).
+    defer_ovis: bool = False
     table_summarization: Optional[bool] = False
     table_summarization_prompt: Optional[str] = None
     table_merging: bool = False

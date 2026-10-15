@@ -8,7 +8,7 @@ from tensorlake.applications import RequestError as RequestException
 from tensorlake_docai.models.intermediate_objects import ParseResult
 from tensorlake_docai.vlm.workflow_images import ocr_gpu_cuda_image
 from tensorlake_docai.pipeline.api import PageFragmentType
-from tensorlake_docai.pipeline.routing import route_after_ocr
+from tensorlake_docai.pipeline.routing import route_after_ocr, ocr_only_stop
 from tensorlake_docai.postprocess.header_correction import correct_document_headers
 from tensorlake_docai.pipeline.simple_page_creator import ImageDimensions
 from tensorlake_docai.ocr.utils import (
@@ -560,6 +560,15 @@ class DotsOCRTask(BatchProcessor):
         )
 
         if has_figures:
+            # Two-GPU split (wrapper): when defer_ovis is set, STOP after dots-ocr
+            # without co-loading Ovis. The figure elements stay marked in the
+            # ParseResult; the wrapper runs OvisFigureOCRTask in its own GPU container
+            # via run_ovis_app. ocr_only_stop returns the ParseResult only when
+            # request.ocr_only is set (always true on the split path).
+            if getattr(parse_result.request, "defer_ovis", False):
+                stopped = ocr_only_stop(parse_result, "DotsOCRTask (defer Ovis → separate GPU)")
+                if stopped is not None:
+                    return stopped
             print("🔀 DotsOCRTask → OvisFigureOCRTask (separate GPU)")
             return OvisFigureOCRTask().run.future(parse_result)
 
