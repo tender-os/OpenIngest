@@ -18,7 +18,7 @@ from tensorlake.applications import RequestError as RequestException
 
 # OpenAI API Configuration (used when USE_AZURE_OPENAI != "true";
 # for Azure, the deployment name from AZURE_OPENAI_MODEL_DEPLOYMENT_NAME is used instead)
-OPENAI_HEADER_CORRECTION_MODEL_NAME = "gpt-4.1"
+OPENAI_HEADER_CORRECTION_MODEL_NAME = "gpt-6-luna"
 
 
 def correct_document_headers(

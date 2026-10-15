@@ -697,7 +697,7 @@ class StructuredExtraction:
         req_params = {
             "model": model_name,
             "messages": messages,
-            "reasoning_effort": "none",
+            "reasoning_effort": "low",
             "stream": True,
             "stream_options": {"include_usage": True},
         }

@@ -16,11 +16,9 @@ from tensorlake_docai.pipeline.routing import stream_with_timeout, update_progre
 GEMINI_TIMEOUT = 10 * 60  # 10 minutes in total
 DEFAULT_VLM_TIMEOUT = 10 * 60  # 10 minutes in total
 OPENAI_LLM_MODEL_NAME = os.environ.get(
-    "OPENAI_LLM_MODEL_NAME", "gpt-5.1"
+    "OPENAI_LLM_MODEL_NAME", "gpt-6.1-sol"
 )  # For structured extraction
-OPENAI_VLM_MODEL_NAME = os.environ.get(
-    "OPENAI_VLM_MODEL_NAME", "gpt-5-mini-2025-08-07"
-)  # For _make_oai_call
+OPENAI_VLM_MODEL_NAME = os.environ.get("OPENAI_VLM_MODEL_NAME", "gpt-6-luna")  # For _make_oai_call
 
 
 def get_gemini_async_client_and_model(
