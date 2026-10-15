@@ -22,6 +22,7 @@ from tensorlake_docai.providers.model_provider_utils import (
     get_openai_client_and_model,
 )
 from tensorlake_docai.extraction.openai_schema_enricher import pydantic_converter
+from tensorlake_docai.providers.tracing import traced_call
 from tensorlake_docai.pipeline.output_formatter import format_final_output
 from pydantic import BaseModel
 from tensorlake_docai.extraction.schema_chunker import split_schema
@@ -730,7 +731,10 @@ class StructuredExtraction:
                 last_progress_update = start_time
 
                 # Create stream and wrap in try/finally for cleanup
-                stream = await oai_client.chat.completions.create(**req_params)
+                with traced_call("structured_extraction"):
+                    stream = await oai_client.chat.completions.create(
+                        **req_params, name="structured_extraction"
+                    )
                 try:
                     async for chunk in stream_with_timeout(stream, timeout_seconds=120):
                         chunk_count += 1

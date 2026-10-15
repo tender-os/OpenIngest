@@ -14,6 +14,7 @@ from tensorlake_docai.pipeline.api import PageFragmentType
 from tensorlake_docai.models.layout_objects import PageLayoutElement
 from tensorlake_docai.models.intermediate_objects import ParseResult
 from tensorlake_docai.providers.model_provider_utils import get_openai_sync_client_and_model
+from tensorlake_docai.providers.tracing import traced_call
 from tensorlake.applications import RequestError as RequestException
 
 # OpenAI API Configuration (used when USE_AZURE_OPENAI != "true";
@@ -50,7 +51,10 @@ def correct_document_headers(
             return parse_result
 
         # Get corrections
-        corrections, input_tokens, output_tokens = _get_openai_corrections(headers_json, api_key)
+        with traced_call("header_correction"):
+            corrections, input_tokens, output_tokens = _get_openai_corrections(
+                headers_json, api_key
+            )
         header_correction_input_tokens += input_tokens
         header_correction_output_tokens += output_tokens
 
@@ -200,6 +204,7 @@ def _get_openai_corrections(
         for attempt in range(max_retries):
             try:
                 completion = client.chat.completions.parse(
+                    name="header_correction",
                     model=model_name,
                     messages=[
                         {

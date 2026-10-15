@@ -10,6 +10,7 @@ from PIL import Image
 
 from tensorlake.applications import RequestError as RequestException
 from tensorlake_docai.pipeline.routing import stream_with_timeout, update_progress_if_needed
+from tensorlake_docai.providers.tracing import traced_call
 
 # NOTE: if the keys are not found or un-set a new deployment/executor will fail.
 
@@ -85,7 +86,7 @@ def get_openai_client_and_model(
     Raises:
         RequestException if Azure is enabled but config is incomplete.
     """
-    from openai import AsyncAzureOpenAI, AsyncOpenAI
+    from langfuse.openai import AsyncAzureOpenAI, AsyncOpenAI
 
     azure = _load_azure_openai_config()
     if azure:
@@ -105,7 +106,7 @@ def get_openai_sync_client_and_model(
     api_key: Optional[str] = None, default_model: str = OPENAI_LLM_MODEL_NAME
 ):
     """Sync counterpart of get_openai_client_and_model. See that function for semantics."""
-    from openai import AzureOpenAI, OpenAI
+    from langfuse.openai import AzureOpenAI, OpenAI
 
     azure = _load_azure_openai_config()
     if azure:
@@ -517,7 +518,9 @@ async def _make_oai_call(
             last_progress_update = start_time
 
             # Create stream and wrap in try/finally for cleanup
-            stream = await oai_client.chat.completions.create(**req_params)
+            call_name = job_type or "vlm_call"
+            with traced_call(call_name):
+                stream = await oai_client.chat.completions.create(**req_params, name=call_name)
             try:
                 async for chunk in stream_with_timeout(stream, timeout_seconds=120):
                     chunk_count += 1
