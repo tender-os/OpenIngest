@@ -24,7 +24,7 @@ table_merging_image = (
 structured_extraction_image = (
     Image(base_image="python:3.12-slim", name="documentai/structured-extraction")
     .run("python -m pip install --upgrade pip wheel setuptools")
-    .run("pip install openai anthropic==0.74.1 google-genai==1.51.0")
+    .run("pip install openai anthropic==0.74.1 google-genai==1.51.0 langfuse==5.0.1")
     .run(f"pip install '{PYDANTIC_PIN}' markdownify")  # Data validation + markdown output
     .run("pip install requests boto3")  # File download + S3 access
     .run("pip install tiktoken==0.11.0 beautifulsoup4==4.13.4")
@@ -42,7 +42,7 @@ vlm_extraction_image = (
     .run("pip install jdeskew==0.3.0 --no-deps")
     .run(f"pip install '{PYDANTIC_PIN}'")  # Data validation
     .run("pip install boto3 requests markdownify")  # AWS and HTTP
-    .run("pip install openai==2.3.0 google-genai==1.51.0")
+    .run("pip install openai==2.3.0 google-genai==1.51.0 langfuse==5.0.1")
     .run(
         "pip install amazon-textract-textractor"
     )  # Removed azure-ai-documentintelligence - not used
@@ -100,7 +100,7 @@ simple_page_creator_image = (
     .run("pip install jdeskew==0.3.0 --no-deps")
     .run(f"pip install '{PYDANTIC_PIN}' markdownify")  # Data validation
     .run("pip install boto3 requests")  # AWS + HTTP
-    .run("pip install openai google-genai==1.51.0")
+    .run("pip install openai google-genai==1.51.0 langfuse==5.0.1")
     .run("pip install amazon-textract-textractor azure-ai-documentintelligence")
     .run("pip cache purge")
 )

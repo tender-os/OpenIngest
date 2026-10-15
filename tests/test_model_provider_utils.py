@@ -13,7 +13,6 @@ from tensorlake_docai.providers.model_provider_utils import (
     get_openai_sync_client_and_model,
 )
 
-
 # ---------------------------------------------------------------------------
 # _load_azure_openai_config
 # ---------------------------------------------------------------------------
@@ -70,7 +69,7 @@ def test_get_openai_client_regular(monkeypatch):
     monkeypatch.setenv("OPENAI_API_KEY", "test-key")
 
     mock_client = MagicMock()
-    with patch("openai.AsyncOpenAI", return_value=mock_client):
+    with patch("langfuse.openai.AsyncOpenAI", return_value=mock_client):
         client, model = get_openai_client_and_model(api_key="test-key")
         assert model is not None
         assert isinstance(model, str)
@@ -83,7 +82,7 @@ def test_get_openai_client_azure_path(monkeypatch):
     monkeypatch.setenv("AZURE_OPENAI_MODEL_DEPLOYMENT_NAME", "gpt-4-deploy")
 
     mock_azure_client = MagicMock()
-    with patch("openai.AsyncAzureOpenAI", return_value=mock_azure_client):
+    with patch("langfuse.openai.AsyncAzureOpenAI", return_value=mock_azure_client):
         client, model = get_openai_client_and_model()
         assert model == "gpt-4-deploy"
 
@@ -95,7 +94,7 @@ def test_get_openai_sync_client_azure_path(monkeypatch):
     monkeypatch.setenv("AZURE_OPENAI_MODEL_DEPLOYMENT_NAME", "gpt-4-deploy")
 
     mock_azure_client = MagicMock()
-    with patch("openai.AzureOpenAI", return_value=mock_azure_client):
+    with patch("langfuse.openai.AzureOpenAI", return_value=mock_azure_client):
         client, model = get_openai_sync_client_and_model()
         assert model == "gpt-4-deploy"
 
@@ -105,7 +104,7 @@ def test_get_openai_sync_client_regular(monkeypatch):
     monkeypatch.setenv("OPENAI_API_KEY", "test-key")
 
     mock_client = MagicMock()
-    with patch("openai.OpenAI", return_value=mock_client):
+    with patch("langfuse.openai.OpenAI", return_value=mock_client):
         client, model = get_openai_sync_client_and_model(api_key="test-key")
         assert isinstance(model, str)
 
